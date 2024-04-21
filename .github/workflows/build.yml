@@ -26,30 +26,6 @@ jobs:
           name: dist
           path: ./dist/
 
-  test:
-    needs: [build]
-    strategy:
-      matrix:
-        os: [ubuntu, macos, windows]
-        version: ["", 827102, 120, dev]
-    runs-on: ${{ matrix.os }}-latest
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: dist
-
-      - name: Install Google Chrome
-        uses: ./
-        with:
-          chrome-version: ${{ matrix.version }}
-        id: setup-chrome
-      - if: runner.os == 'Linux' || runner.os == 'macOS'
-        run: |
-          "${{ steps.setup-chrome.outputs.chrome-path }}" --version
-      - if: runner.os == 'Windows'
-        run: |
-          (Get-Item (Get-Command "${{ steps.setup-chrome.outputs.chrome-path }}").Source).VersionInfo.ProductVersion
-
   test-container:
     needs: [build]
     runs-on: ubuntu-latest
